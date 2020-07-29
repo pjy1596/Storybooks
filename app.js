@@ -16,9 +16,14 @@
 // 이를 막기 위해 세션에 정보 저장
 // ck editor로 add에 있는 textarea 대체하기. cdn + script
 // req.body를 post에서 쓰려면 bodyparser 필요
+// 왜 async를 쓰냐? mongoose가 db니까 로딩 시간 고려한 것
+// req.user랑 req.params.id랑 원래 존재하는 것. req.user는 session에 저장돼 있다가 나오는 애.
+// https://stackoverflow.com/questions/20202980/express-js-passport-js-where-is-req-user-stored
 const express = require("express");
 const dotenv = require("dotenv");
 const exphbs = require("express-handlebars");
+const methodOverride = require("method-override");
+// https://www.npmjs.com/package/method-override
 const path = require("path");
 const mongoose = require("mongoose");
 const passport = require("passport");
@@ -35,12 +40,38 @@ connectDB();
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+// method override
+app.use(
+  methodOverride(function (req, res) {
+    if (req.body && typeof req.body === "object" && "_method" in req.body) {
+      // look in urlencoded POST bodies and delete it => replace with put or delete
+      let method = req.body._method;
+      delete req.body._method;
+      return method;
+    }
+  })
+);
 // development 모드에서만 morgan 쓰게
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+// handlebars helpers
+const {
+  formatDate,
+  stripTags,
+  truncate,
+  editIcon,
+  select,
+} = require("./helpers/hbs");
 // handlebars - 사이트서 복사, defaultlayout 설정
-app.engine(".hbs", exphbs({ defaultLayout: "main", extname: ".hbs" }));
+app.engine(
+  ".hbs",
+  exphbs({
+    helpers: { formatDate, stripTags, truncate, editIcon, select },
+    defaultLayout: "main",
+    extname: ".hbs",
+  })
+);
 app.set("view engine", ".hbs");
 // sessions
 app.use(
@@ -54,13 +85,19 @@ app.use(
 // passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+// set global var
+app.use(function (req, res, next) {
+  // passport 쓰면 req.user에 접근할 수 있다 함
+  res.locals.user = req.user || null;
+  next();
+});
 // static folder
 app.use(express.static(path.join(__dirname, "public")));
 const PORT = process.env.PORT || 3000;
 // routes
 app.use("/", require("./routes/index"));
 app.use("/auth", require("./routes/auth"));
-app.use("stories", require("./routes/stories"));
+app.use("/stories", require("./routes/stories"));
 
 app.listen(
   PORT,

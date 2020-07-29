@@ -12,12 +12,23 @@
         </tr>
     </thead>
     <tbody>
-        {{#each storis}}
+        {{#each stories}}
         <tr>
-            <td><a href="/stories/{{_id}}"></a>{{title}}</td>
-            <td>{{createdAt}}</td>
+            <td><a href="/stories/{{_id}}">{{title}}</a></td>
+            <td>{{formatDate createdAt 'MMMM Do YYYY, h:mm:ss a'}}</td>
             <td><span class="dash-status">{{status}}</span></td>
-            <td></td>
+            <td>
+                {{!-- story의 id임. loop through 됨 --}}
+                <a href="/stories/edit/{{_id}}" class="btn btn-float">
+                    <i class="fas fa-edit"></i></a>
+                {{!-- override 써주기 --}}
+                <form action="/stories/{{_id}}" method='POST' id='delete-form'>
+                    <input type="hidden" name="_method" value='DELETE'>
+                    <button type='submit' class='btn-red'>
+                        <i class='fas fa-trash'></i>
+                    </button>
+                </form>
+            </td>
         </tr>
         {{/each}}
     </tbody>

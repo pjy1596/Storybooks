@@ -1,0 +1,32 @@
+<h1>Stories</h1>
+<div class="row">
+    {{!-- 만약 여기다가 {{user}}라고 치면 그것이 log in된 유저, 밑에 유저는 스토리 쓴 유저 --}}
+    {{#each stories}}
+    {{!-- 밑에 나오는 user들은 전부 story user를 의미. story 안에 속해 있는 것 --}}
+    {{!-- default 값인 floating true는 안 써도 됨 --}}
+    {{!-- ..user는 stories를 벗어난 바깥의 log in된 유저를 의미, global variable로 만들어줬으니 놓칠 리 없다 --}}
+    {{!-- html tag를 parse 하고 싶으면 triple curly braces 써야 됨 --}}
+    <div class="col s12 m4">
+        <div class="card">
+            <div class="card-image">
+                {{{editIcon user ../user _id}}}
+            </div>
+            <div class="card-content center-align">
+                <h5>{{title}}</h5>
+                <p>{{stripTags (truncate body 150)}}</p>
+                <br>
+                <div class="chip">
+                    <img src="{{user.image}}" alt="">
+                    <a href="/stories/user/{{user._id}}">{{user.displayName}}</a>
+                </div>
+            </div>
+            <div class="card-action center-align">
+                <a href="/stories/{{_id}}" class='btn grey'>Read More</a>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <p>No stories to display</p>
+
+    {{/each}}
+</div>

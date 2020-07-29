@@ -16,7 +16,7 @@ router.get("/", ensureGuest, (req, res) => {
 // @route get/ dashboard
 router.get("/dashboard", ensureAuth, async (req, res) => {
   try {
-    // id가 match하는 user만 찾는다(로그인 된 애만 찾음)
+    // id가 match하는 user만 찾는다(로그인 된 애만 찾음 - user가 req.user.id인 애들 다 찾기)
     // lean은 handlebar에서 template에 passin 해서 사용하게 해주는 방법임
     // code를 보자면 일단 찾고난 다음에 자바스크립트로 결과 보여줌
     const stories = await Story.find({ user: req.user.id }).lean();

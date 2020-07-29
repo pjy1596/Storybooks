@@ -18,6 +18,7 @@ const StorySchema = new mongoose.Schema({
   },
   //   user 누가 뭐 했는지 알기 위해
   // ref field means in which collection the id mentioned is going to be searched for. –
+  //   type 얘는 그냥 다 쓰는 거고, 밑에 걸 보면 User에 있는 모든 정보를 다 가져오게 됨
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
